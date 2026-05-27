@@ -1,6 +1,6 @@
 ﻿namespace PAA_Modul7.Models
 {
-    public class CreateTagihanRequest
+    public class CreateUktRequest
     {
         public string MahasiswaId { get; set; } = string.Empty;
         public string TahunAkademik { get; set; } = string.Empty;

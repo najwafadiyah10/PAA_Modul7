@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace PAA_Modul7.Models
 {
@@ -15,7 +16,10 @@ namespace PAA_Modul7.Models
         public string Semester { get; set; } = string.Empty;
         public decimal NilaiUkt { get; set; }
         public decimal TotalDibayar { get; set; } = 0;
+
+        [JsonPropertyName("statusUkt")]
         public string StatusTagihan { get; set; } = "belum_lunas";
+
         public DateTime? JatuhTempo { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

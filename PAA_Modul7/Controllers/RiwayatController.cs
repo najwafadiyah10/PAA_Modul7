@@ -6,46 +6,46 @@ using PAA_Modul7.Models;
 namespace PAA_Modul7.Controllers
 {
     [ApiController]
-    [Route("api/combined-keuangan")]
-    public class CombinedKeuanganController : ControllerBase
+    [Route("api/riwayat")]
+    public class RiwayatController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public CombinedKeuanganController(AppDbContext context)
+        public RiwayatController(AppDbContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetRiwayat()
         {
             var mahasiswas = await _context.Mahasiswas
                 .OrderBy(x => x.Nama)
                 .ToListAsync();
 
-            var result = new List<CombinedKeuanganDto>();
+            var result = new List<RiwayatDto>();
 
             foreach (var mahasiswa in mahasiswas)
             {
-                var tagihan = await _context.Tagihans
+                var ukt = await _context.Tagihans
                     .Where(x => x.MahasiswaId == mahasiswa.Id)
                     .OrderByDescending(x => x.CreatedAt)
                     .ToListAsync();
 
-                var pembayaran = await _context.Pembayarans
+                var bayarUkt = await _context.Pembayarans
                     .Where(x => x.MahasiswaId == mahasiswa.Id)
                     .OrderByDescending(x => x.TanggalPembayaran)
                     .ToListAsync();
 
-                result.Add(new CombinedKeuanganDto
+                result.Add(new RiwayatDto
                 {
                     MahasiswaId = mahasiswa.Id,
                     Nama = mahasiswa.Nama,
                     ProgramStudi = mahasiswa.ProgramStudi,
                     MataKuliah = mahasiswa.MataKuliah,
                     StatusAkademik = mahasiswa.StatusAkademik,
-                    Tagihan = tagihan,
-                    RiwayatPembayaran = pembayaran
+                    Ukt = ukt,
+                    RiwayatBayarUkt = bayarUkt
                 });
             }
 
@@ -53,6 +53,7 @@ namespace PAA_Modul7.Controllers
             {
                 success = true,
                 count = result.Count,
+                message = "Riwayat mahasiswa, UKT, dan bayar UKT berhasil diambil.",
                 data = result
             });
         }

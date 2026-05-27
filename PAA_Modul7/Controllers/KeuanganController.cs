@@ -17,8 +17,8 @@ namespace PAA_Modul7.Controllers
             _context = context;
         }
 
-        [HttpPost("tagihan")]
-        public async Task<IActionResult> CreateTagihan([FromBody] CreateTagihanRequest request)
+        [HttpPost("ukt")]
+        public async Task<IActionResult> CreateUkt([FromBody] CreateUktRequest request)
         {
             var mahasiswa = await _context.Mahasiswas
                 .FirstOrDefaultAsync(x => x.Id == request.MahasiswaId);
@@ -53,7 +53,7 @@ namespace PAA_Modul7.Controllers
                 jatuhTempo = DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc);
             }
 
-            var tagihan = new TagihanEntity
+            var ukt = new TagihanEntity
             {
                 MahasiswaId = mahasiswa.Id,
                 Nama = mahasiswa.Nama,
@@ -68,19 +68,19 @@ namespace PAA_Modul7.Controllers
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _context.Tagihans.Add(tagihan);
+            _context.Tagihans.Add(ukt);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
                 success = true,
-                message = "Tagihan UKT berhasil dibuat",
-                data = tagihan
+                message = "UKT berhasil dibuat",
+                data = ukt
             });
         }
 
-        [HttpGet("tagihan")]
-        public async Task<IActionResult> GetTagihan()
+        [HttpGet("ukt")]
+        public async Task<IActionResult> GetUkt()
         {
             var data = await _context.Tagihans
                 .OrderByDescending(x => x.CreatedAt)
@@ -90,12 +90,13 @@ namespace PAA_Modul7.Controllers
             {
                 success = true,
                 count = data.Count,
+                message = "Data UKT berhasil diambil.",
                 data
             });
         }
 
-        [HttpGet("tagihan/{mahasiswaId}")]
-        public async Task<IActionResult> GetTagihanByMahasiswaId(string mahasiswaId)
+        [HttpGet("ukt/{mahasiswaId}")]
+        public async Task<IActionResult> GetUktByMahasiswaId(string mahasiswaId)
         {
             var data = await _context.Tagihans
                 .Where(x => x.MahasiswaId == mahasiswaId)
@@ -106,23 +107,23 @@ namespace PAA_Modul7.Controllers
             {
                 success = true,
                 count = data.Count,
-                message = "Data tagihan mahasiswa berhasil diambil.",
+                message = "Data UKT mahasiswa berhasil diambil.",
                 data
             });
         }
 
-        [HttpPost("pembayaran")]
-        public async Task<IActionResult> CreatePembayaran([FromBody] CreatePembayaranRequest request)
+        [HttpPost("bayar-ukt")]
+        public async Task<IActionResult> BayarUkt([FromBody] CreateBayarUktRequest request)
         {
-            var tagihan = await _context.Tagihans
-                .FirstOrDefaultAsync(x => x.Id == request.TagihanId);
+            var ukt = await _context.Tagihans
+                .FirstOrDefaultAsync(x => x.Id == request.UktId);
 
-            if (tagihan == null)
+            if (ukt == null)
             {
                 return NotFound(new
                 {
                     success = false,
-                    message = "Tagihan tidak ditemukan"
+                    message = "Data UKT tidak ditemukan"
                 });
             }
 
@@ -135,60 +136,60 @@ namespace PAA_Modul7.Controllers
                 });
             }
 
-            if (tagihan.StatusTagihan == "lunas")
+            if (ukt.StatusTagihan == "lunas")
             {
                 return BadRequest(new
                 {
                     success = false,
-                    message = "Tagihan sudah lunas"
+                    message = "UKT sudah lunas"
                 });
             }
 
-            var pembayaran = new PembayaranEntity
+            var bayarUkt = new PembayaranEntity
             {
-                TagihanId = tagihan.Id,
-                MahasiswaId = tagihan.MahasiswaId,
-                Nama = tagihan.Nama,
+                TagihanId = ukt.Id,
+                MahasiswaId = ukt.MahasiswaId,
+                Nama = ukt.Nama,
                 JumlahBayar = request.JumlahBayar,
-                MetodePembayaran = request.MetodePembayaran,
+                MetodePembayaran = request.MetodeBayarUkt,
                 Keterangan = request.Keterangan,
                 StatusPembayaran = "berhasil",
                 TanggalPembayaran = DateTime.UtcNow
             };
 
-            tagihan.TotalDibayar += request.JumlahBayar;
-            tagihan.UpdatedAt = DateTime.UtcNow;
+            ukt.TotalDibayar += request.JumlahBayar;
+            ukt.UpdatedAt = DateTime.UtcNow;
 
-            if (tagihan.TotalDibayar >= tagihan.NilaiUkt)
+            if (ukt.TotalDibayar >= ukt.NilaiUkt)
             {
-                tagihan.StatusTagihan = "lunas";
+                ukt.StatusTagihan = "lunas";
             }
-            else if (tagihan.TotalDibayar > 0)
+            else if (ukt.TotalDibayar > 0)
             {
-                tagihan.StatusTagihan = "sebagian";
+                ukt.StatusTagihan = "sebagian";
             }
             else
             {
-                tagihan.StatusTagihan = "belum_lunas";
+                ukt.StatusTagihan = "belum_lunas";
             }
 
-            _context.Pembayarans.Add(pembayaran);
+            _context.Pembayarans.Add(bayarUkt);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
                 success = true,
-                message = "Pembayaran berhasil disimpan",
+                message = "Bayar UKT berhasil disimpan",
                 data = new
                 {
-                    pembayaran,
-                    tagihan
+                    bayarUkt,
+                    ukt
                 }
             });
         }
 
-        [HttpGet("pembayaran/{mahasiswaId}")]
-        public async Task<IActionResult> GetPembayaranByMahasiswaId(string mahasiswaId)
+        [HttpGet("bayar-ukt/{mahasiswaId}")]
+        public async Task<IActionResult> GetBayarUktByMahasiswaId(string mahasiswaId)
         {
             var data = await _context.Pembayarans
                 .Where(x => x.MahasiswaId == mahasiswaId)
@@ -199,7 +200,7 @@ namespace PAA_Modul7.Controllers
             {
                 success = true,
                 count = data.Count,
-                message = "Riwayat pembayaran mahasiswa berhasil diambil.",
+                message = "Riwayat bayar UKT mahasiswa berhasil diambil.",
                 data
             });
         }
@@ -219,12 +220,12 @@ namespace PAA_Modul7.Controllers
                 });
             }
 
-            var tagihan = await _context.Tagihans
+            var ukt = await _context.Tagihans
                 .Where(x => x.MahasiswaId == mahasiswaId)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
 
-            var pembayaran = await _context.Pembayarans
+            var bayarUkt = await _context.Pembayarans
                 .Where(x => x.MahasiswaId == mahasiswaId)
                 .OrderByDescending(x => x.TanggalPembayaran)
                 .ToListAsync();
@@ -232,16 +233,16 @@ namespace PAA_Modul7.Controllers
             return Ok(new
             {
                 success = true,
-                message = "Data keuangan mahasiswa berhasil diambil.",
-                data = new CombinedKeuanganDto
+                message = "Riwayat keuangan mahasiswa berhasil diambil.",
+                data = new RiwayatDto
                 {
                     MahasiswaId = mahasiswa.Id,
                     Nama = mahasiswa.Nama,
                     ProgramStudi = mahasiswa.ProgramStudi,
                     MataKuliah = mahasiswa.MataKuliah,
                     StatusAkademik = mahasiswa.StatusAkademik,
-                    Tagihan = tagihan,
-                    RiwayatPembayaran = pembayaran
+                    Ukt = ukt,
+                    RiwayatBayarUkt = bayarUkt
                 }
             });
         }

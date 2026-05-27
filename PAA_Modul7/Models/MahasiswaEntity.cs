@@ -13,11 +13,7 @@ namespace PAA_Modul7.Models
         public string StatusAkademik { get; set; } = string.Empty;
         public int Version { get; set; }
         public string RawDataJson { get; set; } = string.Empty;
-
-        // CreatedAt mengikuti createdAt dari API Mahasiswa.
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        // SyncedAt menunjukkan waktu terakhir data disinkronkan ke API Keuangan.
         public DateTime SyncedAt { get; set; } = DateTime.UtcNow;
     }
 }

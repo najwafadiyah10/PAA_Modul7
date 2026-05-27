@@ -17,6 +17,9 @@ namespace PAA_Modul7.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Membuat data UKT mahasiswa.
+        /// </summary>
         [HttpPost("ukt")]
         public async Task<IActionResult> CreateUkt([FromBody] CreateUktRequest request)
         {
@@ -79,6 +82,9 @@ namespace PAA_Modul7.Controllers
             });
         }
 
+        /// <summary>
+        /// Menampilkan semua data UKT.
+        /// </summary>
         [HttpGet("ukt")]
         public async Task<IActionResult> GetUkt()
         {
@@ -95,6 +101,9 @@ namespace PAA_Modul7.Controllers
             });
         }
 
+        /// <summary>
+        /// Menampilkan data UKT berdasarkan id mahasiswa.
+        /// </summary>
         [HttpGet("ukt/{mahasiswaId}")]
         public async Task<IActionResult> GetUktByMahasiswaId(string mahasiswaId)
         {
@@ -112,6 +121,9 @@ namespace PAA_Modul7.Controllers
             });
         }
 
+        /// <summary>
+        /// Melakukan pembayaran UKT mahasiswa.
+        /// </summary>
         [HttpPost("bayar-ukt")]
         public async Task<IActionResult> BayarUkt([FromBody] CreateBayarUktRequest request)
         {
@@ -188,8 +200,11 @@ namespace PAA_Modul7.Controllers
             });
         }
 
-        [HttpGet("bayar-ukt/{mahasiswaId}")]
-        public async Task<IActionResult> GetBayarUktByMahasiswaId(string mahasiswaId)
+        /// <summary>
+        /// Menampilkan riwayat bayar UKT berdasarkan id mahasiswa.
+        /// </summary>
+        [HttpGet("riwayat/{mahasiswaId}")]
+        public async Task<IActionResult> GetRiwayatBayarUktByMahasiswaId(string mahasiswaId)
         {
             var data = await _context.Pembayarans
                 .Where(x => x.MahasiswaId == mahasiswaId)
@@ -205,6 +220,9 @@ namespace PAA_Modul7.Controllers
             });
         }
 
+        /// <summary>
+        /// Menampilkan riwayat keuangan satu mahasiswa.
+        /// </summary>
         [HttpGet("mahasiswa/{mahasiswaId}")]
         public async Task<IActionResult> GetKeuanganMahasiswa(string mahasiswaId)
         {

@@ -1,0 +1,6 @@
+@PAA_Modul7_HostAddress = http://localhost:5216
+
+GET {{PAA_Modul7_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
